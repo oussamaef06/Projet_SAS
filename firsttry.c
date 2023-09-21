@@ -34,7 +34,7 @@ void ajouterTache(Tache liste[], int *taille)
     scanf(" %[^\n]", nouvelleTache.description);
     printf("Entrez le deadline de la tâche (format JJ/MM/AAAA) : ");
     scanf("%d/%d/%d", &nouvelleTache.deadline.jour, &nouvelleTache.deadline.mois, &nouvelleTache.deadline.annee);
-    printf("Entrez le statut de la tâche (à réaliser, en cours de réalisation, finalisée) : ");
+    printf("Entrez le statut de la tâche (à réaliser = 1, en cours de réalisation = 2, finalisée = 3) : ");
     scanf(" %[^\n]", nouvelleTache.statut);
     liste[*taille] = nouvelleTache;
     (*taille)++;
@@ -135,8 +135,6 @@ void trierParNom(Tache liste[], int taille)
     }
 }
 
-
-
 void trierParDeadline(Tache liste[], int taille) {
     if (taille == 0) {
         printf("Aucune tâche à trier.\n");
@@ -166,6 +164,76 @@ void trierParDeadline(Tache liste[], int taille) {
                liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
     }
 }
+
+/*void trierParDeadlineProche(Tache liste[], int taille){
+    const int three_D = 86400 * 3; // Three days in seconds
+    time_t currentTime;
+    time(&currentTime);
+    
+    printf("Tâches dont la deadline est proche :\n");
+    printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
+    
+    for (int i = 0; i < taille; i++){
+        struct tm task_tm;
+        task_tm.tm_mday = liste[i].deadline.jour;
+        task_tm.tm_mon = liste[i].deadline.mois - 1; // Adjust month since it's 0-based
+        task_tm.tm_year = liste[i].deadline.annee - 1900; // Adjust year since it's years since 1900
+        
+        time_t taskTime = mktime(&task_tm);
+        if (taskTime - currentTime <= three_D){
+            printf("%-5d %-20s %-30s %02d/%02d/%04d %-20s\n", liste[i].id, liste[i].titre, liste[i].description,
+               liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
+        }
+    }
+}*/
+
+void modifierTache(Tache liste[], int taille) {
+    int idTache;
+    printf("Entrez l'ID de la tâche que vous souhaitez modifier : ");
+    scanf("%d", &idTache);
+
+    // Recherche de la tâche par ID
+    int index = -1;
+    for (int i = 0; i < taille; i++) {
+        if (liste[i].id == idTache) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1) {
+        int choix;
+        printf("Que souhaitez-vous modifier pour cette tâche ?\n");
+        printf("1. Modifier la description\n");
+        printf("2. Modifier le statut\n");
+        printf("3. Modifier le deadline\n");
+        printf("Choix : ");
+        scanf("%d", &choix);
+
+        switch (choix) {
+            case 1:
+                printf("Entrez la nouvelle description pour la tâche : ");
+                scanf(" %[^\n]", liste[index].description);
+                printf("Description modifiée avec succès !\n");
+                break;
+            case 2:
+                printf("Entrez le nouveau statut pour la tâche (à réaliser = 1, en cours de réalisation = 2, finalisée = 3) : ");
+                scanf(" %[^\n]", liste[index].statut);
+                printf("Statut modifié avec succès !\n");
+                break;
+            case 3:
+                printf("Entrez la nouvelle deadline de la tâche (format JJ/MM/AAAA) : ");
+                scanf("%d/%d/%d", &liste[index].deadline.jour, &liste[index].deadline.mois, &liste[index].deadline.annee);
+                printf("Deadline modifiée avec succès !\n");
+                break;
+            default:
+                printf("Choix invalide.\n");
+        }
+    } else {
+        printf("Tâche avec ID %d non trouvée.\n", idTache);
+    }
+}
+
 
 int main()
 {
@@ -208,6 +276,15 @@ int main()
         case 5:
             trierParDeadline(liste, taille);
             break;
+        /*case 6:
+            trierParDeadlineProche(liste, taille);
+            break;*/
+        case 7:
+            modifierTache(liste, taille);
+            break;
+        case 8:
+            SupprimerTache(liste, taille);
+            break
         case 0:
             return 0; // Quitter le programme
         default:
