@@ -125,25 +125,47 @@ void trierParNom(Tache liste[], int taille)
             }
         }
     }
-}
 
-void afficherTachestrierParNom(Tache liste[], int taille)
-{
-    int i;
-    if (taille == 0)
-    {
-        printf("Aucune tâche trier à afficher.\n");
-        return;
-    }
     printf("Liste de toutes les tâches trier par ordre alphabétique :\n");
     printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
-    for (i = 0; i < taille; i++)
+    for (int i = 0; i < taille; i++)
     {
         printf("%-5d %-20s %-30s %02d/%02d/%04d %-20s\n", liste[i].id, liste[i].titre, liste[i].description,
                liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
     }
 }
 
+
+
+void trierParDeadline(Tache liste[], int taille) {
+    if (taille == 0) {
+        printf("Aucune tâche à trier.\n");
+        return;
+    }
+
+    for (int i = 0; i < taille - 1; i++) {
+        for (int j = 0; j < taille - i - 1; j++) {
+            if (liste[j].deadline.annee > liste[j + 1].deadline.annee ||
+                (liste[j].deadline.annee == liste[j + 1].deadline.annee &&
+                 liste[j].deadline.mois > liste[j + 1].deadline.mois) ||
+                (liste[j].deadline.annee == liste[j + 1].deadline.annee &&
+                 liste[j].deadline.mois == liste[j + 1].deadline.mois &&
+                 liste[j].deadline.jour > liste[j + 1].deadline.jour)) {
+                
+                Tache temp = liste[j];
+                liste[j] = liste[j + 1];
+                liste[j + 1] = temp;
+            }
+        }
+    }
+
+    printf("Tâches triées par deadline :\n");
+    printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
+    for (int i = 0; i < taille; i++) {
+        printf("%-5d %-20s %-30s %02d/%02d/%04d %-20s\n", liste[i].id, liste[i].titre, liste[i].description,
+               liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
+    }
+}
 
 int main()
 {
@@ -157,15 +179,14 @@ int main()
         printf("1. Ajouter une nouvelle tâche\n");
         printf("2. Ajouter plusieurs nouvelles tâches\n");
         printf("3. Afficher la liste de toutes les tâches\n");
-        printf("4. Trier les tâches par ordre alphabétique\n");
-        printf("5. Afficher toutes les tâches trier par ordre alphabétique\n");
-        printf("6. Trier les tâches par deadline\n");
-        printf("7. Afficher les tâches avec un deadline proche\n");
-        printf("8. Modifier une tâche\n");
-        printf("9. Supprimer une tâche par identifiant\n");
-        printf("10. Rechercher une tâche par identifiant\n");
-        printf("11. Rechercher une tâche par titre\n");
-        printf("12. Afficher les statistiques\n");
+        printf("4. Trier et afficher les tâches par ordre alphabétique\n");
+        printf("5. Trier et afficher les tâches par deadline\n");
+        printf("6. Afficher les tâches avec un deadline proche\n");
+        printf("7. Modifier une tâche\n");
+        printf("8. Supprimer une tâche par identifiant\n");
+        printf("9. Rechercher une tâche par identifiant\n");
+        printf("10. Rechercher une tâche par titre\n");
+        printf("11. Afficher les statistiques\n");
         printf("0. Quitter\n");
         printf("Choix : ");
         scanf("%d", &choix);
@@ -185,7 +206,7 @@ int main()
             trierParNom(liste, taille);
             break;
         case 5:
-            afficherTachestrierParNom(liste, taille);
+            trierParDeadline(liste, taille);
             break;
         case 0:
             return 0; // Quitter le programme
