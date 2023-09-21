@@ -29,13 +29,13 @@ void ajouterTache(Tache liste[], int *taille)
     }
     nouvelleTache.id = *taille + 1;
     printf("Entrez le titre de la tâche : ");
-    scanf("%s", nouvelleTache.titre);
+    scanf(" %[^\n]", nouvelleTache.titre);
     printf("Entrez la description de la tâche : ");
-    scanf("%s", nouvelleTache.description);
+    scanf(" %[^\n]", nouvelleTache.description);
     printf("Entrez le deadline de la tâche (format JJ/MM/AAAA) : ");
     scanf("%d/%d/%d", &nouvelleTache.deadline.jour, &nouvelleTache.deadline.mois, &nouvelleTache.deadline.annee);
     printf("Entrez le statut de la tâche (à réaliser, en cours de réalisation, finalisée) : ");
-    scanf("%s", nouvelleTache.statut);
+    scanf(" %[^\n]", nouvelleTache.statut);
     liste[*taille] = nouvelleTache;
     (*taille)++;
     printf("Tâche ajoutée avec succès !\n");
