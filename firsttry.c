@@ -76,38 +76,73 @@ void afficherToutesTaches(Tache liste[], int taille)
     }
 }
 
+void swap(Tache task[], int i, int j)
+{
+    Tache temp;
+    temp.id = task[i].id;
+    task[i].id = task[j].id;
+    task[j].id = temp.id;
+
+    temp.deadline.jour = task[i].deadline.jour;
+    task[i].deadline.jour = task[j].deadline.jour;
+    task[j].deadline.jour = temp.deadline.jour;
+
+    temp.deadline.mois = task[i].deadline.mois;
+    task[i].deadline.mois = task[j].deadline.mois;
+    task[j].deadline.mois = temp.deadline.mois;
+
+    temp.deadline.annee = task[i].deadline.annee;
+    task[i].deadline.annee = task[j].deadline.annee;
+    task[j].deadline.annee = temp.deadline.annee;
+
+    strcpy(temp.titre, task[i].titre);
+    strcpy(task[i].titre, task[j].titre);
+    strcpy(task[j].titre, temp.titre);
+
+    strcpy(temp.description, task[i].description);
+    strcpy(task[i].description, task[j].description);
+    strcpy(task[j].description, temp.description);
+
+    strcpy(temp.statut, task[i].statut);
+    strcpy(task[i].statut, task[j].statut);
+    strcpy(task[j].statut, temp.statut);
+}
+
 void trierParNom(Tache liste[], int taille)
 {
-    int i, j;
-    Tache temp;
     if (taille == 0)
     {
         printf("Aucune tâche à trier.\n");
         return;
     }
-    for (i = 0; i < taille - 1; i++)
+    for (int i = 0; i < taille; i++)
     {
-        for (j = 0; j < taille - i - 1; j++)
+        for (int j = i + 1; j < taille; j++)
         {
-            // Compare the letters of titles one by one
-            int k = 0;
-            while (liste[j].titre[k] != '\0' && liste[j + 1].titre[k] != '\0' &&
-                   liste[j].titre[k] == liste[j + 1].titre[k])
+            if (strcmp(liste[i].titre, liste[j].titre) > 0)
             {
-                k++;
-            }
-
-            // If the letters are different or one title is shorter, swap if necessary
-            if (liste[j].titre[k] > liste[j + 1].titre[k])
-            {
-                temp = liste[j];
-                liste[j] = liste[j + 1];
-                liste[j + 1] = temp;
+                swap(liste, i, j);
             }
         }
     }
 }
 
+void afficherTachestrierParNom(Tache liste[], int taille)
+{
+    int i;
+    if (taille == 0)
+    {
+        printf("Aucune tâche trier à afficher.\n");
+        return;
+    }
+    printf("Liste de toutes les tâches trier par ordre alphabétique :\n");
+    printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
+    for (i = 0; i < taille; i++)
+    {
+        printf("%-5d %-20s %-30s %02d/%02d/%04d %-20s\n", liste[i].id, liste[i].titre, liste[i].description,
+               liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
+    }
+}
 
 
 int main()
@@ -123,13 +158,14 @@ int main()
         printf("2. Ajouter plusieurs nouvelles tâches\n");
         printf("3. Afficher la liste de toutes les tâches\n");
         printf("4. Trier les tâches par ordre alphabétique\n");
-        printf("5. Trier les tâches par deadline\n");
-        printf("6. Afficher les tâches avec un deadline proche\n");
-        printf("7. Modifier une tâche\n");
-        printf("8. Supprimer une tâche par identifiant\n");
-        printf("9. Rechercher une tâche par identifiant\n");
-        printf("10. Rechercher une tâche par titre\n");
-        printf("11. Afficher les statistiques\n");
+        printf("5. Afficher toutes les tâches trier par ordre alphabétique\n");
+        printf("6. Trier les tâches par deadline\n");
+        printf("7. Afficher les tâches avec un deadline proche\n");
+        printf("8. Modifier une tâche\n");
+        printf("9. Supprimer une tâche par identifiant\n");
+        printf("10. Rechercher une tâche par identifiant\n");
+        printf("11. Rechercher une tâche par titre\n");
+        printf("12. Afficher les statistiques\n");
         printf("0. Quitter\n");
         printf("Choix : ");
         scanf("%d", &choix);
@@ -147,6 +183,9 @@ int main()
             break;
         case 4:
             trierParNom(liste, taille);
+            break;
+        case 5:
+            afficherTachestrierParNom(liste, taille);
             break;
         case 0:
             return 0; // Quitter le programme
