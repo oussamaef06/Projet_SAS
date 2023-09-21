@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <stdbool.h>
 
 typedef struct
 {
@@ -234,6 +235,73 @@ void modifierTache(Tache liste[], int taille) {
     }
 }
 
+int supprimerTache(Tache liste[], int taille, int idToDelete) {
+    int newSize = taille;
+    int foundIndex = -1;
+
+    // Find the task to delete and mark its index
+    for (int i = 0; i < taille; i++) {
+        if (liste[i].id == idToDelete) {
+            foundIndex = i;
+            break;
+        }
+    }
+
+    if (foundIndex != -1) {
+        // Shift elements to fill the gap
+        for (int i = foundIndex; i < taille - 1; i++) {
+            liste[i] = liste[i + 1];
+        }
+        newSize--; // Decrease the size of the array
+
+        printf("Tâche avec l'ID %d supprimée avec succès !\n", idToDelete);
+    } else {
+        printf("Tâche avec l'ID %d non trouvée.\n", idToDelete);
+    }
+
+    return newSize; // Return the new size of the task list
+}
+
+void rechercheIdentifiant(Tache liste[], int taille, int idToFind) {
+    bool found = false;
+
+    for (int i = 0; i < taille; i++) {
+        if (liste[i].id == idToFind) {
+            found = true;
+            printf("Tâche trouvée :\n");
+            printf("ID: %d\n", liste[i].id);
+            printf("Titre: %s\n", liste[i].titre);
+            printf("Description: %s\n", liste[i].description);
+            printf("Deadline: %02d/%02d/%04d\n", liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee);
+            printf("Statut: %s\n", liste[i].statut);
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("Tâche avec l'ID %d non trouvée.\n", idToFind);
+    }
+}
+
+void rechercheTitre(Tache liste[], int taille, const char *titreToFind) {
+    bool found = false;
+
+    for (int i = 0; i < taille; i++) {
+        if (strcmp(liste[i].titre, titreToFind) == 0) {
+            found = true;
+            printf("Tâche trouvée :\n");
+            printf("ID: %d\n", liste[i].id);
+            printf("Titre: %s\n", liste[i].titre);
+            printf("Description: %s\n", liste[i].description);
+            printf("Deadline: %02d/%02d/%04d\n", liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee);
+            printf("Statut: %s\n", liste[i].statut);
+        }
+    }
+
+    if (!found) {
+        printf("Aucune tâche avec le titre \"%s\" n'a été trouvée.\n", titreToFind);
+    }
+}
 
 int main()
 {
@@ -283,8 +351,23 @@ int main()
             modifierTache(liste, taille);
             break;
         case 8:
-            SupprimerTache(liste, taille);
-            break
+        int idToDelete;
+            printf("Entrez l'ID de la tâche que vous souhaitez supprimer : ");
+            scanf("%d", &idToDelete);
+            taille = supprimerTache(liste, taille, idToDelete); // Update the size
+            break;
+        case 9:
+            int idToFind;
+            printf("Entrez l'ID de la tâche que vous souhaitez rechercher : ");
+            scanf("%d", &idToFind);
+            rechercheIdentifiant(liste, taille, idToFind);
+            break;
+        case 10:
+            char titreToFind[100];
+            printf("Entrez le titre de la tâche que vous souhaitez rechercher : ");
+            scanf(" %[^\n]", titreToFind);
+            rechercheTitre(liste, taille, titreToFind);
+            break;
         case 0:
             return 0; // Quitter le programme
         default:
