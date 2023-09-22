@@ -3,6 +3,8 @@
 #include <time.h>
 #include <stdbool.h>
 
+ int taille = 0;
+
 typedef struct
 {
     int jour;
@@ -19,16 +21,16 @@ typedef struct
     char statut[30];
 } Tache;
 
-void ajouterTache(Tache liste[], int *taille)
+void ajouterTache(Tache liste[])
 {
     Tache nouvelleTache;
 
-    if (*taille >= 500)
+    if (taille >= 500)
     {
         printf("La liste de tâches est pleine. Impossible d'ajouter une nouvelle tâche.\n");
         return;
     }
-    nouvelleTache.id = *taille + 1;
+    nouvelleTache.id = taille + 1;
     printf("Entrez le titre de la tâche : ");
     scanf(" %[^\n]", nouvelleTache.titre);
     printf("Entrez la description de la tâche : ");
@@ -52,12 +54,12 @@ void ajouterTache(Tache liste[], int *taille)
     default:
         break;
     }
-    liste[*taille] = nouvelleTache;
-    (*taille)++;
+    liste[taille] = nouvelleTache;
+    (taille)++;
     printf("Tâche ajoutée avec succès !\n");
 }
 
-void ajouterPlusieursTaches(Tache liste[], int *taille)
+void ajouterPlusieursTaches(Tache liste[])
 {
     int nombreTaches;
     int i;
@@ -66,16 +68,16 @@ void ajouterPlusieursTaches(Tache liste[], int *taille)
     scanf("%d", &nombreTaches);
     for (i = 0; i < nombreTaches; i++)
     {
-        if (*taille >= 500)
+        if (taille >= 500)
         {
             printf("La liste de tâches est pleine. Impossible d'ajouter plus de tâches.\n");
             return;
         }
-        ajouterTache(liste, taille);
+        ajouterTache(liste);
     }
 }
 
-void afficherToutesTaches(Tache liste[], int taille)
+void afficherToutesTaches(Tache liste[])
 {
     int i;
     if (taille == 0)
@@ -124,7 +126,7 @@ void swap(Tache task[], int i, int j)
     strcpy(task[j].statut, temp.statut);
 }
 
-void trierParNom(Tache liste[], int taille)
+void trierParNom(Tache liste[])
 {
     if (taille == 0)
     {
@@ -151,7 +153,7 @@ void trierParNom(Tache liste[], int taille)
     }
 }
 
-void trierParDeadline(Tache liste[], int taille)
+void trierParDeadline(Tache liste[])
 {
     if (taille == 0)
     {
@@ -187,7 +189,7 @@ void trierParDeadline(Tache liste[], int taille)
     }
 }
 
-void trierParDeadlineProche(Tache liste[], int taille){
+void trierParDeadlineProche(Tache liste[]){
     const int three_D = 3; // 3 jours
     time_t currentTime;
     time(&currentTime);
@@ -212,7 +214,7 @@ void trierParDeadlineProche(Tache liste[], int taille){
     }
 }
 
-void modifierTache(Tache liste[], int taille)
+void modifierTache(Tache liste[])
 {
     int idTache;
     printf("Entrez l'ID de la tâche que vous souhaitez modifier : ");
@@ -266,7 +268,7 @@ void modifierTache(Tache liste[], int taille)
     }
 }
 
-int supprimerTache(Tache liste[], int taille, int idToDelete)
+int supprimerTache(Tache liste[], int idToDelete)
 {
     int newSize = taille;
     int foundIndex = -1;
@@ -300,7 +302,7 @@ int supprimerTache(Tache liste[], int taille, int idToDelete)
     return newSize; // Return the new size of the task list
 }
 
-void rechercheIdentifiant(Tache liste[], int taille, int idToFind)
+void rechercheIdentifiant(Tache liste[], int idToFind)
 {
     bool found = false;
 
@@ -325,7 +327,7 @@ void rechercheIdentifiant(Tache liste[], int taille, int idToFind)
     }
 }
 
-void rechercheTitre(Tache liste[], int taille, const char *titreToFind)
+void rechercheTitre(Tache liste[], const char titreToFind[])
 {
     bool found = false;
 
@@ -349,7 +351,7 @@ void rechercheTitre(Tache liste[], int taille, const char *titreToFind)
     }
 }
 
-void statistiques(Tache liste[], int taille) {
+void statistiques(Tache liste[]) {
     printf("Statistiques :\n");
 
     // Afficher le nombre total de tâches
@@ -396,7 +398,7 @@ void statistiques(Tache liste[], int taille) {
 int main()
 {
     Tache liste[500];
-    int taille = 0;
+   
     int choix;
 
     while (1)
@@ -420,46 +422,46 @@ int main()
         switch (choix)
         {
         case 1:
-            ajouterTache(liste, &taille);
+            ajouterTache(liste);
             break;
         case 2:
-            ajouterPlusieursTaches(liste, &taille);
+            ajouterPlusieursTaches(liste);
             break;
         case 3:
-            afficherToutesTaches(liste, taille);
+            afficherToutesTaches(liste);
             break;
         case 4:
-            trierParNom(liste, taille);
+            trierParNom(liste);
             break;
         case 5:
-            trierParDeadline(liste, taille);
+            trierParDeadline(liste);
             break;
         case 6:
-            trierParDeadlineProche(liste, taille);
+            trierParDeadlineProche(liste);
             break;
         case 7:
-            modifierTache(liste, taille);
+            modifierTache(liste);
             break;
         case 8:
             int idToDelete;
             printf("Entrez l'ID de la tâche que vous souhaitez supprimer : ");
             scanf("%d", &idToDelete);
-            taille = supprimerTache(liste, taille, idToDelete); // Update the size
+            taille = supprimerTache(liste, idToDelete); // Update the size
             break;
         case 9:
             int idToFind;
             printf("Entrez l'ID de la tâche que vous souhaitez rechercher : ");
             scanf("%d", &idToFind);
-            rechercheIdentifiant(liste, taille, idToFind);
+            rechercheIdentifiant(liste, idToFind);
             break;
         case 10:
             char titreToFind[100];
             printf("Entrez le titre de la tâche que vous souhaitez rechercher : ");
             scanf(" %[^\n]", titreToFind);
-            rechercheTitre(liste, taille, titreToFind);
+            rechercheTitre(liste, titreToFind);
             break;
         case 11:
-            statistiques(liste, taille);
+            statistiques(liste);
             break;
         case 0:
             return 0; // Quitter le programme
