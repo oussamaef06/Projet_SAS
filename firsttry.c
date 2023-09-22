@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdbool.h>
 
- int taille = 0;
+int taille = 0;
 
 typedef struct
 {
@@ -25,7 +25,7 @@ void ajouterTache(Tache liste[])
 {
     Tache nouvelleTache;
 
-    if (taille >= 500)
+    if (taille >= 250)
     {
         printf("La liste de tâches est pleine. Impossible d'ajouter une nouvelle tâche.\n");
         return;
@@ -68,7 +68,7 @@ void ajouterPlusieursTaches(Tache liste[])
     scanf("%d", &nombreTaches);
     for (i = 0; i < nombreTaches; i++)
     {
-        if (taille >= 500)
+        if (taille >= 250)
         {
             printf("La liste de tâches est pleine. Impossible d'ajouter plus de tâches.\n");
             return;
@@ -189,7 +189,8 @@ void trierParDeadline(Tache liste[])
     }
 }
 
-void trierParDeadlineProche(Tache liste[]){
+void trierParDeadlineProche(Tache liste[])
+{
     const int three_D = 3; // 3 jours
     time_t currentTime;
     time(&currentTime);
@@ -197,8 +198,9 @@ void trierParDeadlineProche(Tache liste[]){
     printf("Tâches dont la deadline est proche :\n");
     printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
 
-    for (int i = 0; i < taille; i++){
-        struct tm task_tm;
+    for (int i = 0; i < taille; i++)
+    {
+        struct tm task_tm = {0}; // Initialize all fields to 0
         task_tm.tm_mday = liste[i].deadline.jour;
         task_tm.tm_mon = liste[i].deadline.mois - 1;
         task_tm.tm_year = liste[i].deadline.annee - 1900;
@@ -207,9 +209,10 @@ void trierParDeadlineProche(Tache liste[]){
         double diff = difftime(taskTime, currentTime);
         int daysDiff = diff / (60 * 60 * 24); // Convertir la différence en jours
 
-        if (daysDiff <= three_D && daysDiff >= 0){ // Vérifier si la deadline est dans les 3 jours et est positive
+        if (daysDiff <= three_D && daysDiff >= 0)
+        { // Vérifier si la deadline est dans les 3 jours et est positive
             printf("%-5d %-20s %-30s %02d/%02d/%04d %-20s\n", liste[i].id, liste[i].titre, liste[i].description,
-               liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
+                   liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
         }
     }
 }
@@ -351,21 +354,26 @@ void rechercheTitre(Tache liste[], const char titreToFind[])
     }
 }
 
-void statistiques(Tache liste[]) {
+void statistiques(Tache liste[])
+{
     printf("Statistiques :\n");
-
-    // Afficher le nombre total de tâches
-    printf("Nombre total de tâches : %d\n", taille);
 
     // Initialiser les compteurs pour les tâches complètes et incomplètes
     int tachesCompletes = 0;
     int tachesIncompletes = 0;
 
+    // Afficher le nombre total de tâches
+    printf("Nombre total de tâches : %d\n", taille);
+
     // Calculer le nombre de tâches complètes et incomplètes
-    for (int i = 0; i < taille; i++) {
-        if (strcmp(liste[i].statut, "finalisée") == 0) {
+    for (int i = 0; i < taille; i++)
+    {
+        if (strcmp(liste[i].statut, "finalisée") == 0)
+        {
             tachesCompletes++;
-        } else {
+        }
+        else
+        {
             tachesIncompletes++;
         }
     }
@@ -376,20 +384,21 @@ void statistiques(Tache liste[]) {
 
     // Afficher le nombre de jours restants jusqu'au délai de chaque tâche
     printf("Nombre de jours restants jusqu'au délai de chaque tâche :\n");
-    printf("%-5s %-20s %-12s %-20s\n", "ID", "Titre", "Délai (jours)", "Statut");
+    printf("%-5s %-20s %-12s %-20s\n", "ID", "Titre", "Délai (j)", "Statut");
 
-    time_t currentTime;
-    time(&currentTime);
-
-    for (int i = 0; i < taille; i++) {
-        struct tm task_tm;
+    for (int i = 0; i < taille; i++)
+    {
+        struct tm task_tm = {0}; // Initialize all fields to 0
         task_tm.tm_mday = liste[i].deadline.jour;
         task_tm.tm_mon = liste[i].deadline.mois - 1;
         task_tm.tm_year = liste[i].deadline.annee - 1900;
 
+        time_t currentTime;
+        time(&currentTime); // Update currentTime for each task
+
         time_t taskTime = mktime(&task_tm);
         double diff = difftime(taskTime, currentTime);
-        int joursRestants = diff / (60 * 60 * 24);
+        int joursRestants = diff / (60 * 60 * 24); // Convertir la différence en jours
 
         printf("%-5d %-20s %-12d %-20s\n", liste[i].id, liste[i].titre, joursRestants, liste[i].statut);
     }
@@ -397,8 +406,8 @@ void statistiques(Tache liste[]) {
 
 int main()
 {
-    Tache liste[500];
-   
+    Tache liste[250];
+
     int choix;
 
     while (1)
