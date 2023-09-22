@@ -187,8 +187,8 @@ void trierParDeadline(Tache liste[], int taille)
     }
 }
 
-/*void trierParDeadlineProche(Tache liste[], int taille){
-    const int three_D = 86400 * 3; // Three days in seconds
+void trierParDeadlineProche(Tache liste[], int taille){
+    const int three_D = 3; // 3 jours
     time_t currentTime;
     time(&currentTime);
 
@@ -198,16 +198,19 @@ void trierParDeadline(Tache liste[], int taille)
     for (int i = 0; i < taille; i++){
         struct tm task_tm;
         task_tm.tm_mday = liste[i].deadline.jour;
-        task_tm.tm_mon = liste[i].deadline.mois - 1; // Adjust month since it's 0-based
-        task_tm.tm_year = liste[i].deadline.annee - 1900; // Adjust year since it's years since 1900
+        task_tm.tm_mon = liste[i].deadline.mois - 1;
+        task_tm.tm_year = liste[i].deadline.annee - 1900;
 
         time_t taskTime = mktime(&task_tm);
-        if (taskTime - currentTime <= three_D){
+        double diff = difftime(taskTime, currentTime);
+        int daysDiff = diff / (60 * 60 * 24); // Convertir la différence en jours
+
+        if (daysDiff <= three_D && daysDiff >= 0){ // Vérifier si la deadline est dans les 3 jours et est positive
             printf("%-5d %-20s %-30s %02d/%02d/%04d %-20s\n", liste[i].id, liste[i].titre, liste[i].description,
                liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
         }
     }
-}*/
+}
 
 void modifierTache(Tache liste[], int taille)
 {
@@ -346,6 +349,50 @@ void rechercheTitre(Tache liste[], int taille, const char *titreToFind)
     }
 }
 
+void statistiques(Tache liste[], int taille) {
+    printf("Statistiques :\n");
+
+    // Afficher le nombre total de tâches
+    printf("Nombre total de tâches : %d\n", taille);
+
+    // Initialiser les compteurs pour les tâches complètes et incomplètes
+    int tachesCompletes = 0;
+    int tachesIncompletes = 0;
+
+    // Calculer le nombre de tâches complètes et incomplètes
+    for (int i = 0; i < taille; i++) {
+        if (strcmp(liste[i].statut, "finalisée") == 0) {
+            tachesCompletes++;
+        } else {
+            tachesIncompletes++;
+        }
+    }
+
+    // Afficher le nombre de tâches complètes et incomplètes
+    printf("Nombre de tâches complètes : %d\n", tachesCompletes);
+    printf("Nombre de tâches incomplètes : %d\n", tachesIncompletes);
+
+    // Afficher le nombre de jours restants jusqu'au délai de chaque tâche
+    printf("Nombre de jours restants jusqu'au délai de chaque tâche :\n");
+    printf("%-5s %-20s %-12s %-20s\n", "ID", "Titre", "Délai (jours)", "Statut");
+
+    time_t currentTime;
+    time(&currentTime);
+
+    for (int i = 0; i < taille; i++) {
+        struct tm task_tm;
+        task_tm.tm_mday = liste[i].deadline.jour;
+        task_tm.tm_mon = liste[i].deadline.mois - 1;
+        task_tm.tm_year = liste[i].deadline.annee - 1900;
+
+        time_t taskTime = mktime(&task_tm);
+        double diff = difftime(taskTime, currentTime);
+        int joursRestants = diff / (60 * 60 * 24);
+
+        printf("%-5d %-20s %-12d %-20s\n", liste[i].id, liste[i].titre, joursRestants, liste[i].statut);
+    }
+}
+
 int main()
 {
     Tache liste[500];
@@ -387,9 +434,9 @@ int main()
         case 5:
             trierParDeadline(liste, taille);
             break;
-        /*case 6:
+        case 6:
             trierParDeadlineProche(liste, taille);
-            break;*/
+            break;
         case 7:
             modifierTache(liste, taille);
             break;
@@ -410,6 +457,9 @@ int main()
             printf("Entrez le titre de la tâche que vous souhaitez rechercher : ");
             scanf(" %[^\n]", titreToFind);
             rechercheTitre(liste, taille, titreToFind);
+            break;
+        case 11:
+            statistiques(liste, taille);
             break;
         case 0:
             return 0; // Quitter le programme
