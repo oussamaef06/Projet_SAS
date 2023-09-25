@@ -1,18 +1,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <stdbool.h>
 
 int taille = 0;
 
-typedef struct
+typedef struct date
 {
     int jour;
     int mois;
     int annee;
 } date;
 
-typedef struct
+typedef struct Tache
 {
     int id;
     char titre[100];
@@ -94,36 +93,13 @@ void afficherToutesTaches(Tache liste[])
     }
 }
 
-void swap(Tache task[], int i, int j)
+void swap(Tache liste[], int i, int j)
 {
     Tache temp;
-    temp.id = task[i].id;
-    task[i].id = task[j].id;
-    task[j].id = temp.id;
 
-    temp.deadline.jour = task[i].deadline.jour;
-    task[i].deadline.jour = task[j].deadline.jour;
-    task[j].deadline.jour = temp.deadline.jour;
-
-    temp.deadline.mois = task[i].deadline.mois;
-    task[i].deadline.mois = task[j].deadline.mois;
-    task[j].deadline.mois = temp.deadline.mois;
-
-    temp.deadline.annee = task[i].deadline.annee;
-    task[i].deadline.annee = task[j].deadline.annee;
-    task[j].deadline.annee = temp.deadline.annee;
-
-    strcpy(temp.titre, task[i].titre);
-    strcpy(task[i].titre, task[j].titre);
-    strcpy(task[j].titre, temp.titre);
-
-    strcpy(temp.description, task[i].description);
-    strcpy(task[i].description, task[j].description);
-    strcpy(task[j].description, temp.description);
-
-    strcpy(temp.statut, task[i].statut);
-    strcpy(task[i].statut, task[j].statut);
-    strcpy(task[j].statut, temp.statut);
+    temp = liste[i];
+    liste[i] = liste[j];
+    liste[j] = temp;
 }
 
 void trierParNom(Tache liste[])
@@ -143,7 +119,6 @@ void trierParNom(Tache liste[])
             }
         }
     }
-
     printf("Liste de toutes les tâches trier par ordre alphabétique :\n");
     printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
     for (int i = 0; i < taille; i++)
@@ -160,7 +135,6 @@ void trierParDeadline(Tache liste[])
         printf("Aucune tâche à trier.\n");
         return;
     }
-
     for (int i = 0; i < taille - 1; i++)
     {
         for (int j = 0; j < taille - i - 1; j++)
@@ -172,14 +146,12 @@ void trierParDeadline(Tache liste[])
                  liste[j].deadline.mois == liste[j + 1].deadline.mois &&
                  liste[j].deadline.jour > liste[j + 1].deadline.jour))
             {
-
                 Tache temp = liste[j];
                 liste[j] = liste[j + 1];
                 liste[j + 1] = temp;
             }
         }
     }
-
     printf("Tâches triées par deadline :\n");
     printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
     for (int i = 0; i < taille; i++)
@@ -191,26 +163,25 @@ void trierParDeadline(Tache liste[])
 
 void trierParDeadlineProche(Tache liste[])
 {
-    const int three_D = 3; // 3 jours
-    time_t currentTime;
-    time(&currentTime);
+    time_t currentTime; 
+    time(&currentTime); 
 
     printf("Tâches dont la deadline est proche :\n");
     printf("%-5s %-20s %-30s %-12s %-20s\n", "ID", "Titre", "Description", "Deadline", "Statut");
 
-    for (int i = 0; i < taille; i++)
+    for (int i = 0; i < taille; i++) 
     {
-        struct tm task_tm = {0}; // Initialize all fields to 0
-        task_tm.tm_mday = liste[i].deadline.jour;
-        task_tm.tm_mon = liste[i].deadline.mois - 1;
-        task_tm.tm_year = liste[i].deadline.annee - 1900;
+        struct tm task_tm = {0};                          
+        task_tm.tm_mday = liste[i].deadline.jour;         
+        task_tm.tm_mon = liste[i].deadline.mois - 1;      
+        task_tm.tm_year = liste[i].deadline.annee - 1900; 
 
-        time_t taskTime = mktime(&task_tm);
-        double diff = difftime(taskTime, currentTime);
-        int daysDiff = diff / (60 * 60 * 24); // Convertir la différence en jours
+        time_t taskTime = mktime(&task_tm);            
+        double diff = difftime(taskTime, currentTime); 
+        int daysDiff = diff / (60 * 60 * 24);          
 
-        if (daysDiff <= three_D && daysDiff >= 0)
-        { // Vérifier si la deadline est dans les 3 jours et est positive
+        if (daysDiff <= 3 && daysDiff >= 0)
+        { 
             printf("%-5d %-20s %-30s %02d/%02d/%04d %-20s\n", liste[i].id, liste[i].titre, liste[i].description,
                    liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee, liste[i].statut);
         }
@@ -223,7 +194,6 @@ void modifierTache(Tache liste[])
     printf("Entrez l'ID de la tâche que vous souhaitez modifier : ");
     scanf("%d", &idTache);
 
-    // Recherche de la tâche par ID
     int index = -1;
     for (int i = 0; i < taille; i++)
     {
@@ -233,7 +203,6 @@ void modifierTache(Tache liste[])
             break;
         }
     }
-
     if (index != -1)
     {
         int choix;
@@ -253,7 +222,21 @@ void modifierTache(Tache liste[])
             break;
         case 2:
             printf("Entrez le nouveau statut pour la tâche (à réaliser = 1, en cours de réalisation = 2, finalisée = 3) : ");
-            scanf(" %[^\n]", liste[index].statut);
+            scanf(" %d", &choix);
+            switch (choix)
+            {
+            case 1:
+                strcpy(liste[index].statut, "à réaliser");
+                break;
+            case 2:
+                strcpy(liste[index].statut, "en cours");
+                break;
+            case 3:
+                strcpy(liste[index].statut, "finalisée");
+                break;
+            default:
+                break;
+            }
             printf("Statut modifié avec succès !\n");
             break;
         case 3:
@@ -273,72 +256,48 @@ void modifierTache(Tache liste[])
 
 int supprimerTache(Tache liste[], int idToDelete)
 {
-    int newSize = taille;
-    int foundIndex = -1;
-
-    // Find the task to delete and mark its index
     for (int i = 0; i < taille; i++)
     {
         if (liste[i].id == idToDelete)
         {
-            foundIndex = i;
-            break;
+            for (int j = i; j < taille - 1; j++)
+            {
+                liste[j] = liste[j + 1];
+            }
+            taille--;
+            printf("Tâche avec l'ID %d supprimée avec succès !\n", idToDelete);
+            return taille;
         }
     }
-
-    if (foundIndex != -1)
-    {
-        // Shift elements to fill the gap
-        for (int i = foundIndex; i < taille - 1; i++)
-        {
-            liste[i] = liste[i + 1];
-        }
-        newSize--; // Decrease the size of the array
-
-        printf("Tâche avec l'ID %d supprimée avec succès !\n", idToDelete);
-    }
-    else
-    {
-        printf("Tâche avec l'ID %d non trouvée.\n", idToDelete);
-    }
-
-    return newSize; // Return the new size of the task list
+    printf("Tâche avec l'ID %d non trouvée.\n", idToDelete);
+    return taille;
 }
 
 void rechercheIdentifiant(Tache liste[], int idToFind)
 {
-    bool found = false;
-
     for (int i = 0; i < taille; i++)
     {
         if (liste[i].id == idToFind)
         {
-            found = true;
             printf("Tâche trouvée :\n");
             printf("ID: %d\n", liste[i].id);
             printf("Titre: %s\n", liste[i].titre);
             printf("Description: %s\n", liste[i].description);
             printf("Deadline: %02d/%02d/%04d\n", liste[i].deadline.jour, liste[i].deadline.mois, liste[i].deadline.annee);
             printf("Statut: %s\n", liste[i].statut);
-            break;
+            return;
         }
     }
 
-    if (!found)
-    {
-        printf("Tâche avec l'ID %d non trouvée.\n", idToFind);
-    }
+    printf("Tâche avec l'ID %d non trouvée.\n", idToFind);
 }
 
 void rechercheTitre(Tache liste[], const char titreToFind[])
 {
-    bool found = false;
-
     for (int i = 0; i < taille; i++)
     {
         if (strcmp(liste[i].titre, titreToFind) == 0)
         {
-            found = true;
             printf("Tâche trouvée :\n");
             printf("ID: %d\n", liste[i].id);
             printf("Titre: %s\n", liste[i].titre);
@@ -347,25 +306,18 @@ void rechercheTitre(Tache liste[], const char titreToFind[])
             printf("Statut: %s\n", liste[i].statut);
         }
     }
-
-    if (!found)
-    {
-        printf("Aucune tâche avec le titre \"%s\" n'a été trouvée.\n", titreToFind);
-    }
+    printf("Aucune tâche avec le titre \"%s\" n'a été trouvée.\n", titreToFind);
 }
 
 void statistiques(Tache liste[])
 {
     printf("Statistiques :\n");
 
-    // Initialiser les compteurs pour les tâches complètes et incomplètes
     int tachesCompletes = 0;
     int tachesIncompletes = 0;
 
-    // Afficher le nombre total de tâches
     printf("Nombre total de tâches : %d\n", taille);
 
-    // Calculer le nombre de tâches complètes et incomplètes
     for (int i = 0; i < taille; i++)
     {
         if (strcmp(liste[i].statut, "finalisée") == 0)
@@ -377,28 +329,26 @@ void statistiques(Tache liste[])
             tachesIncompletes++;
         }
     }
-
-    // Afficher le nombre de tâches complètes et incomplètes
+    
     printf("Nombre de tâches complètes : %d\n", tachesCompletes);
     printf("Nombre de tâches incomplètes : %d\n", tachesIncompletes);
 
-    // Afficher le nombre de jours restants jusqu'au délai de chaque tâche
     printf("Nombre de jours restants jusqu'au délai de chaque tâche :\n");
     printf("%-5s %-20s %-12s %-20s\n", "ID", "Titre", "Délai (j)", "Statut");
 
     for (int i = 0; i < taille; i++)
     {
-        struct tm task_tm = {0}; // Initialize all fields to 0
+        struct tm task_tm = {0};
         task_tm.tm_mday = liste[i].deadline.jour;
         task_tm.tm_mon = liste[i].deadline.mois - 1;
         task_tm.tm_year = liste[i].deadline.annee - 1900;
 
         time_t currentTime;
-        time(&currentTime); // Update currentTime for each task
+        time(&currentTime);
 
         time_t taskTime = mktime(&task_tm);
         double diff = difftime(taskTime, currentTime);
-        int joursRestants = diff / (60 * 60 * 24); // Convertir la différence en jours
+        int joursRestants = diff / (60 * 60 * 24);
 
         printf("%-5d %-20s %-12d %-20s\n", liste[i].id, liste[i].titre, joursRestants, liste[i].statut);
     }
@@ -455,7 +405,7 @@ int main()
             int idToDelete;
             printf("Entrez l'ID de la tâche que vous souhaitez supprimer : ");
             scanf("%d", &idToDelete);
-            taille = supprimerTache(liste, idToDelete); // Update the size
+            taille = supprimerTache(liste, idToDelete);
             break;
         case 9:
             int idToFind;
@@ -473,7 +423,7 @@ int main()
             statistiques(liste);
             break;
         case 0:
-            return 0; // Quitter le programme
+            return 0;
         default:
             printf("Choix invalide. Veuillez réessayer.\n");
         }
